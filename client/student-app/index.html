@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0f0c29" />
+  <meta name="description" content="Campus Crowd Check-in — Help monitor crowd density on campus" />
+  <title>Campus Check-In</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-container">
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span class="status-dot" id="statusDot"></span>
+      <span class="status-text" id="statusText">Initializing...</span>
+    </div>
+
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5"/>
+          <path d="M2 12l10 5 10-5"/>
+        </svg>
+      </div>
+      <h1>Campus Check-In</h1>
+      <p class="subtitle">Sparse Mobile Crowdsensing</p>
+    </header>
+
+    <!-- Zone Card -->
+    <div class="zone-card" id="zoneCard">
+      <div class="zone-label">YOUR CURRENT ZONE</div>
+      <div class="zone-name" id="zoneName">—</div>
+      <div class="zone-status" id="zoneStatus">
+        <span class="zone-status-dot" id="zoneStatusDot"></span>
+        <span id="zoneStatusText">Tap to check in</span>
+      </div>
+      <div class="zone-meta" id="zoneMeta"></div>
+    </div>
+
+    <!-- WiFi Selector -->
+    <div class="wifi-selector-card">
+      <div class="wifi-selector-header">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+          <path d="M5 12.55a11 11 0 0114.08 0"/>
+          <path d="M1.42 9a16 16 0 0121.16 0"/>
+          <path d="M8.53 16.11a6 6 0 016.95 0"/>
+          <line x1="12" y1="20" x2="12.01" y2="20"/>
+        </svg>
+        <span>Select Your WiFi Network</span>
+      </div>
+      <select id="wifiSelector" onchange="onWifiSelected()">
+        <option value="">-- Not connected / Unknown --</option>
+      </select>
+    </div>
+
+    <!-- Check-In Button -->
+    <div class="checkin-wrapper">
+      <button class="checkin-btn" id="checkinBtn" onclick="performCheckin()">
+        <div class="checkin-pulse"></div>
+        <div class="checkin-inner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+          <span>CHECK IN</span>
+        </div>
+      </button>
+    </div>
+
+    <!-- Auto Check-in Toggle -->
+    <div class="auto-checkin-row">
+      <label class="toggle-label" for="autoToggle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="12 6 12 12 16 14"/>
+        </svg>
+        Auto check-in every 2 min
+      </label>
+      <label class="toggle-switch">
+        <input type="checkbox" id="autoToggle" onchange="toggleAutoCheckin()" />
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+
+    <!-- Info Cards -->
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="info-icon">📍</div>
+        <div class="info-label">Detection</div>
+        <div class="info-value" id="detectionMethod">—</div>
+      </div>
+      <div class="info-card">
+        <div class="info-icon">👥</div>
+        <div class="info-label">Zone Count</div>
+        <div class="info-value" id="zoneCount">—</div>
+      </div>
+      <div class="info-card">
+        <div class="info-icon">🕐</div>
+        <div class="info-label">Last Check-in</div>
+        <div class="info-value" id="lastCheckin">Never</div>
+      </div>
+      <div class="info-card">
+        <div class="info-icon">📶</div>
+        <div class="info-label">WiFi Network</div>
+        <div class="info-value" id="wifiName">Scanning...</div>
+      </div>
+    </div>
+
+    <!-- Privacy Note -->
+    <div class="privacy-note">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+        <path d="M7 11V7a5 5 0 0110 0v4"/>
+      </svg>
+      <span>100% anonymous — no personal data collected</span>
+    </div>
+  </div>
+
+  <script src="checkin.js"></script>
+</body>
+</html>

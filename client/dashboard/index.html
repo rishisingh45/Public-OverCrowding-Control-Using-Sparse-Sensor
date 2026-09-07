@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description"
+        content="Overcrowding Control System — Admin Dashboard for real-time campus crowd monitoring" />
+    <title>Campus Crowd Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <!-- Alert Banner -->
+    <div class="alert-banner" id="alertBanner">
+        <div class="alert-banner-inner">
+            <span class="alert-icon">🚨</span>
+            <span class="alert-message" id="alertMessage">Overcrowding detected!</span>
+            <button class="alert-dismiss" onclick="dismissAlert()">✕</button>
+        </div>
+    </div>
+
+    <!-- Main Layout -->
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                        <path d="M2 17l10 5 10-5" />
+                        <path d="M2 12l10 5 10-5" />
+                    </svg>
+                </div>
+                <h1>CrowdSense</h1>
+                <p class="sidebar-sub">Sparse Crowdsensing Dashboard</p>
+            </div>
+
+            <nav class="sidebar-nav">
+                <button class="nav-btn active" data-tab="live" onclick="switchTab('live')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <polyline points="12 6 12 12 16 14" />
+                    </svg>
+                    Live Monitor
+                </button>
+                <button class="nav-btn" data-tab="history" onclick="switchTab('history')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 3v5h5" />
+                        <path d="M3 8a9 9 0 1018 0" />
+                    </svg>
+                    Historical Data
+                </button>
+                <button class="nav-btn" data-tab="predictions" onclick="switchTab('predictions')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                    </svg>
+                    Predictions
+                </button>
+                <button class="nav-btn" data-tab="alerts" onclick="switchTab('alerts')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                        <path d="M13.73 21a2 2 0 01-3.46 0" />
+                    </svg>
+                    Alert Log
+                </button>
+            </nav>
+
+            <div class="sidebar-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Total on Campus</span>
+                    <span class="stat-value" id="totalOnCampus">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Zones Monitored</span>
+                    <span class="stat-value" id="zonesMonitored">8</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Active Alerts</span>
+                    <span class="stat-value alert-value" id="activeAlerts">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Last Updated</span>
+                    <span class="stat-value" id="lastUpdated">—</span>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="connection-status">
+                    <span class="conn-dot" id="connDot"></span>
+                    <span id="connText">Connecting...</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+
+            <!-- ═══ LIVE TAB ═══ -->
+            <section class="tab-content active" id="tab-live">
+                <div class="tab-header">
+                    <h2>Live Campus Monitor</h2>
+                    <span class="live-badge"><span class="live-dot"></span> LIVE</span>
+                </div>
+
+                <div class="live-grid">
+                    <!-- Map -->
+                    <div class="panel map-panel">
+                        <div class="panel-header">
+                            <h3>Campus Map</h3>
+                            <span class="panel-badge">Leaflet.js</span>
+                        </div>
+                        <div id="campusMap" class="campus-map"></div>
+                    </div>
+
+                    <!-- Zone Cards -->
+                    <div class="panel zones-panel">
+                        <div class="panel-header">
+                            <h3>Zone Status</h3>
+                        </div>
+                        <div class="zone-grid" id="zoneGrid"></div>
+                    </div>
+
+                    <!-- Chart -->
+                    <div class="panel chart-panel">
+                        <div class="panel-header">
+                            <h3>Crowd Trends</h3>
+                            <select id="chartZoneSelect" class="chart-select" onchange="updateChart()">
+                                <option value="all">All Zones</option>
+                            </select>
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="crowdChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Zone Table -->
+                    <div class="panel table-panel">
+                        <div class="panel-header">
+                            <h3>Detailed Zone Data</h3>
+                        </div>
+                        <div class="table-scroll">
+                            <table class="zone-table">
+                                <thead>
+                                    <tr>
+                                        <th>Zone</th>
+                                        <th>Count</th>
+                                        <th>Capacity</th>
+                                        <th>Occupancy</th>
+                                        <th>Status</th>
+                                        <th>Source</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="zoneTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══ HISTORY TAB ═══ -->
+            <section class="tab-content" id="tab-history">
+                <div class="tab-header">
+                    <h2>Historical Data</h2>
+                </div>
+                <div class="history-controls">
+                    <div class="control-group">
+                        <label>Date</label>
+                        <input type="date" id="historyDate" class="control-input" />
+                    </div>
+                    <div class="control-group">
+                        <label>Hour</label>
+                        <select id="historyHour" class="control-input">
+                            <option value="">All Hours</option>
+                        </select>
+                    </div>
+                    <button class="btn-primary" onclick="loadHistory()">Load Data</button>
+                </div>
+                <div class="panel">
+                    <div class="chart-wrapper">
+                        <canvas id="historyChart"></canvas>
+                    </div>
+                </div>
+                <div class="panel">
+                    <div class="table-scroll">
+                        <table class="zone-table">
+                            <thead>
+                                <tr>
+                                    <th>Zone</th>
+                                    <th>Hour</th>
+                                    <th>Detected</th>
+                                    <th>Estimated Total</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══ PREDICTIONS TAB ═══ -->
+            <section class="tab-content" id="tab-predictions">
+                <div class="tab-header">
+                    <h2>Sparse Predictions</h2>
+                    <span class="badge-info">AI-Powered Interpolation</span>
+                </div>
+                <div class="predictions-grid" id="predictionsGrid"></div>
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3>Prediction vs Actual</h3>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="predictionChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══ ALERTS TAB ═══ -->
+            <section class="tab-content" id="tab-alerts">
+                <div class="tab-header">
+                    <h2>Alert Log</h2>
+                </div>
+                <div class="alert-list" id="alertList">
+                    <div class="empty-state">No alerts yet</div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+    <script src="map.js"></script>
+    <script src="charts.js"></script>
+    <script src="live.js"></script>
+</body>
+
+</html>
