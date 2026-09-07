@@ -2,7 +2,7 @@
     "name": "Campus Check-In",
     "short_name": "CheckIn",
     "description": "Anonymous campus crowd monitoring check-in",
-    "start_url": "/student/",
+    "start_url": "./index.html",
     "display": "standalone",
     "background_color": "#0f0c29",
     "theme_color": "#7c5cfc",

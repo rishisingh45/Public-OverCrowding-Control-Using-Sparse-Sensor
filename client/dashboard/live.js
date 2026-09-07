@@ -1,6 +1,7 @@
 // ─── Socket.io Live Updates & Dashboard Logic ───
 
-const API_BASE = window.location.origin;
+const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const API_BASE = isLocal ? window.location.origin : 'https://YOUR_BACKEND_URL.onrender.com'; // TODO: Update this with your Render backend URL
 let socket;
 
 // ─── Tab Navigation ───
@@ -156,7 +157,7 @@ function showAlertBanner(alert) {
     if (Notification.permission === 'granted') {
         new Notification(`${alert.severity === 'critical' ? '🚨' : '⚠️'} ${alert.zoneName}`, {
             body: `${alert.count}/${alert.capacity} people — ${alert.severity}`,
-            icon: '/student/manifest.json'
+            icon: '../student-app/manifest.json'
         });
     }
 }

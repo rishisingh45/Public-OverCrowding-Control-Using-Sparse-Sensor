@@ -1,10 +1,10 @@
 const CACHE_NAME = 'campus-checkin-v1';
 const ASSETS_TO_CACHE = [
-    '/student/',
-    '/student/index.html',
-    '/student/style.css',
-    '/student/checkin.js',
-    '/student/manifest.json'
+    './',
+    './index.html',
+    './style.css',
+    './checkin.js',
+    './manifest.json'
 ];
 
 // Install — cache assets

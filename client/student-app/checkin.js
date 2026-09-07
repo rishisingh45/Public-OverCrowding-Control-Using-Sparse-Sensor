@@ -1,5 +1,6 @@
 // ─── Configuration ───
-const API_BASE = window.location.origin;
+const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const API_BASE = isLocal ? window.location.origin : 'https://YOUR_BACKEND_URL.onrender.com'; // TODO: Update this with your Render backend URL
 const CHECKIN_INTERVAL = 2 * 60 * 1000; // 2 minutes
 
 let autoCheckinTimer = null;
