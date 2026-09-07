@@ -1,10 +1,9 @@
 {
-  "version": 2,
   "rewrites": [
-    { "source": "/dashboard/(.*)", "destination": "/client/dashboard/$1" },
     { "source": "/dashboard", "destination": "/client/dashboard/index.html" },
-    { "source": "/student/(.*)", "destination": "/client/student-app/$1" },
+    { "source": "/dashboard/(.*)", "destination": "/client/dashboard/$1" },
     { "source": "/student", "destination": "/client/student-app/index.html" },
-    { "source": "/(.*)", "destination": "/client/dashboard/index.html" }
+    { "source": "/student/(.*)", "destination": "/client/student-app/$1" },
+    { "source": "/", "destination": "/client/dashboard/index.html" }
   ]
 }
